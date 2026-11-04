@@ -37,12 +37,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -199,6 +197,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         Settings.load(applicationContext)
         TabletConfig.load(applicationContext)
+        KeyboardConfig.load(applicationContext)
         setContent {
             val store = remember { GestureStore(applicationContext) }
             val keys = remember { QuickKeyStore(applicationContext) }
@@ -226,8 +225,8 @@ fun TrackpadScreen(
     var mode by remember { mutableStateOf(PadMode.MOUSE) }
     var showGestures by remember { mutableStateOf(false) }
     var showSettings by remember { mutableStateOf(false) }
+    var showKeyboard by remember { mutableStateOf(false) }
     var showKeys by remember { mutableStateOf(false) }
-    var keyboardSoon by remember { mutableStateOf(false) }
     var superHeld by remember { mutableStateOf(false) }
     val battery = rememberBattery()
 
@@ -238,6 +237,8 @@ fun TrackpadScreen(
         SettingsScreen { showSettings = false }
     } else if (showGestures) {
         GesturesScreen(store) { showGestures = false }
+    } else if (showKeyboard) {
+        KeyboardScreen(send) { showKeyboard = false }
     } else {
         Column(
             Modifier
@@ -279,22 +280,13 @@ fun TrackpadScreen(
                     showGestures = true
                 }
                 ClickButton("⌨  Клавиатура", Modifier.width(140.dp).fillMaxHeight(), false) {
-                    keyboardSoon = true
+                    showKeyboard = true
                 }
             }
         }
     }
 
     if (showKeys) QuickKeysDialog(keys) { showKeys = false }
-
-    if (keyboardSoon) {
-        AlertDialog(
-            onDismissRequest = { keyboardSoon = false },
-            confirmButton = { TextButton(onClick = { keyboardSoon = false }) { Text("Ок") } },
-            title = { Text("Клавиатура") },
-            text = { Text("Полная экранная клавиатура появится позже. Пока можно добавлять нужные сочетания кнопкой «+ Кнопки».") }
-        )
-    }
 }
 
 @Composable

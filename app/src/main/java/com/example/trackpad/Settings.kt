@@ -159,6 +159,7 @@ fun SettingsScreen(onBack: () -> Unit) {
             }
             SwipesEditor()
             TabletSettingsCard()
+            KeyboardSettingsCard()
             AccentPicker()
         }
     }
